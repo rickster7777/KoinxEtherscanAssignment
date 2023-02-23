@@ -3,6 +3,7 @@ require('dotenv').config();
 const db = process.env.DATABASE;
 
 
+mongoose.set('strictQuery', false);
 
 const mongoConnection = mongoose.connect(db , {
   useNewUrlParser: true, 

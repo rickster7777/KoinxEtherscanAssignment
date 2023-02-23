@@ -1,19 +1,25 @@
 require('dotenv').config();
-const express = require('express')
-const app = express()
-const port = 3000
-require('./db.js')
+const express = require('express');
+const app = express();
+const port = 3000;
+require('./db.js');
 const Transaction = require('./model/transactionSchema');
+//Destructuring to get the exports from metrics.js
+const { startMetricsServer, restResponseTimeHistogram, counter } = require('./utils/metrics.js');
 
 let page = 1;
 let offset = 5;
+
+let start = new Date()
+let simulateTime = 1000
+
+
 app.get('/', async (req, res) => {
   //res.send('Hello World Koinx !')
   let address = req.query.address;
   let url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=${page}&offset=${offset}&sort=asc&apikey=${process.env.apikey}`;
   let data = await fetch(url);
   let json = await data.json();
-  //console.log(json);
   result = json.result;
   result.forEach((transaction) => {
     let transactions = new Transaction({
@@ -40,10 +46,20 @@ app.get('/', async (req, res) => {
     });
     transactions.save().catch(error => console.log(error));
   });
+  setTimeout(() => {
+    let end = new Date() - start
+    //convertig to seconds
+    restResponseTimeHistogram.observe(end / 1000); 
+  }, simulateTime)
 
+  //Incrementing the counter
+  counter.inc();
   res.status(200).send(json);
 })
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
+
+  //Prometheus server started
+  startMetricsServer();
 })
