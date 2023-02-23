@@ -1,7 +1,7 @@
 const mongooose = require('mongoose');
 
 const transactionSchema = new mongooose.Schema({
-    blockNumber: {
+    blockNumber: {                               
         type: String,
         required: false
     },
@@ -84,6 +84,6 @@ const transactionSchema = new mongooose.Schema({
     }
 })
 
-const User = mongooose.model('USER', transactionSchema);
+const Transaction = mongooose.model('transaction', transactionSchema);
 
-module.exports = User;
+module.exports = Transaction;
