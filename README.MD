@@ -15,10 +15,8 @@ Install NPM packages
 '''
 
 ## USAGE
-<sub>
 App will run on:
 http://localhost:3000/?address=<transaction_adress>
 
 To check the metrics
 http://localhost:9100/metrics
-</sub>
